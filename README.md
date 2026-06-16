@@ -4,9 +4,9 @@ POC app for scraping Nike ads from Facebook Ads Library and visualizing the resu
 
 ## Current Approach
 
-The scraper uses Playwright to open the Facebook Ads Library page, scroll through the public results, then reads the loaded page HTML and extracts ad data from embedded JSON objects. A GraphQL pagination replay approach is intentionally left as a possible future improvement.
+The scraper uses Playwright/Chromium to open the Facebook Ads Library page, bootstrap the public session, capture the page's Ads Library GraphQL request, and replay pagination cursors until it has up to 50 Nike ads. It also falls back to parsing the initially loaded page HTML when pagination is rate-limited.
 
-In the current logged-out environment, Facebook renders 30 Nike ads and then the page footer. The scraper is written to keep scrolling until 50 ads are found, but it exits cleanly if the page stops loading more content.
+Stored ad data includes ad ID, active/inactive status, platforms, run dates, the best available image/video asset URL, and the raw source payload for debugging.
 
 ## Apps
 
