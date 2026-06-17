@@ -17,9 +17,10 @@ Stored ad data includes ad ID, active/inactive status, platforms, run dates, the
 
 ```sh
 npm install
+cp .env.example .env.local
 docker compose up -d postgres
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ads_dashboard?schema=public" \
-  npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+npm exec --workspace @ads-dashboard/api -- prisma migrate deploy --schema prisma/schema.prisma
 ```
 
 Start the API and frontend:
@@ -41,13 +42,13 @@ The API listens on `http://localhost:3001`; opening that URL directly returns AP
 Run the scraper directly:
 
 ```sh
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ads_dashboard?schema=public" \
-  npm run scrape --workspace @ads-dashboard/api
+npm run scrape --workspace @ads-dashboard/api
 ```
 
 Run checks:
 
 ```sh
+npm test
 npm run typecheck
 npm run build
 ```
