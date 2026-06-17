@@ -7,13 +7,13 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ads_dashboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - postgres-data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
 
   api:
     build:
@@ -26,24 +26,19 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      - postgres
-      - redis
-    volumes:
-      - ./apps/api/src:/app/apps/api/src
-      - ./apps/api/prisma:/app/apps/api/prisma
+      postgres:
+        condition: service_healthy
 
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
-    environment:
-      VITE_API_URL: http://localhost:3001
+      args:
+        VITE_API_URL: http://localhost:3001
     ports:
-      - "5173:5173"
+      - "5173:80"
     depends_on:
       - api
-    volumes:
-      - ./apps/web/src:/app/apps/web/src
 
 volumes:
   postgres-data:

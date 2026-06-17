@@ -29,15 +29,35 @@ export type AdFilters = {
   from?: string;
   to?: string;
   status?: string;
-  platform?: string;
+  platform?: string[];
 };
 
-export async function getAds(filters: AdFilters) {
-  return request<Ad[]>(`/ads${toQueryString(filters)}`);
+export type AdsFacets = {
+  platforms: string[];
+  statuses: string[];
+};
+
+export type AdsPage = {
+  items: Ad[];
+  nextOffset: number | null;
+  total: number;
+};
+
+export type AdsPageOptions = {
+  limit: number;
+  offset?: number;
+};
+
+export async function getAds(filters: AdFilters, options: AdsPageOptions) {
+  return request<AdsPage>(`/ads${toQueryString({ ...filters, ...options })}`);
 }
 
 export async function getAdsSummary(filters: AdFilters) {
   return request<SummaryPoint[]>(`/ads/summary${toQueryString(filters)}`);
+}
+
+export async function getAdsFacets() {
+  return request<AdsFacets>("/ads/facets");
 }
 
 export async function startScrape() {
@@ -58,12 +78,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-function toQueryString(filters: AdFilters) {
+function toQueryString(filters: Record<string, string | string[] | number | undefined>) {
   const params = new URLSearchParams();
 
   for (const [key, value] of Object.entries(filters)) {
-    if (value) {
-      params.set(key, value);
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item) {
+          params.append(key, item);
+        }
+      }
+      continue;
+    }
+
+    if (value !== undefined && value !== "") {
+      params.set(key, String(value));
     }
   }
 

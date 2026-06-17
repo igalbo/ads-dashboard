@@ -4,7 +4,7 @@ POC app for scraping Nike ads from Facebook Ads Library and visualizing the resu
 
 ## Current Approach
 
-The scraper uses Playwright/Chromium to open the Facebook Ads Library page, bootstrap the public session, capture the page's Ads Library GraphQL request, and replay pagination cursors until it has up to 50 Nike ads. It also falls back to parsing the initially loaded page HTML when pagination is rate-limited.
+The scraper uses Playwright/Chromium to open the Facebook Ads Library page, bootstrap the public session, capture Ads Library GraphQL responses, and keep loading results until it has up to 50 Nike ads.
 
 Stored ad data includes ad ID, active/inactive status, platforms, run dates, the best available image/video asset URL, and the raw source payload for debugging.
 
@@ -17,23 +17,15 @@ Stored ad data includes ad ID, active/inactive status, platforms, run dates, the
 
 ```sh
 npm install
-docker compose up -d postgres redis
+docker compose up -d postgres
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ads_dashboard?schema=public" \
   npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
 ```
 
-Start the API:
+Start the API and frontend:
 
 ```sh
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ads_dashboard?schema=public" \
-  API_PORT=3001 \
-  npm run dev --workspace @ads-dashboard/api
-```
-
-Start the frontend:
-
-```sh
-VITE_API_URL="http://localhost:3001" npm run dev --workspace @ads-dashboard/web
+npm run dev
 ```
 
 Open:
@@ -41,6 +33,8 @@ Open:
 ```txt
 http://localhost:5173
 ```
+
+The API listens on `http://localhost:3001`; opening that URL directly returns API responses, not the dashboard.
 
 ## Useful Commands
 
@@ -62,20 +56,22 @@ npm run build
 
 - `POST /scrapes`: starts a scrape run
 - `GET /scrapes/latest`: returns the latest scrape run
-- `GET /ads`: returns scraped ads, with optional `from`, `to`, `status`, and `platform` filters
+- `GET /ads`: returns paginated scraped ads, with optional `from`, `to`, `status`, and repeated `platform` filters
+- `GET /ads/facets`: returns filter values from the full database
 - `GET /ads/summary`: returns active/inactive counts over time
 
 ## Docker
 
-The project includes Dockerfiles and `docker-compose.yml` for the API, web app, Postgres, and Redis.
+The project includes production Dockerfiles and `docker-compose.yml` for the API, web app, and Postgres.
 
 ```sh
-docker compose up --build
+docker compose up --build -d
 ```
 
-Then apply migrations inside or against the Postgres service:
+Apply migrations through the API image:
 
 ```sh
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ads_dashboard?schema=public" \
-  npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+docker compose exec api npx prisma migrate deploy --schema prisma/schema.prisma
 ```
+
+Open `http://localhost:5173`. The API is exposed at `http://localhost:3001`.

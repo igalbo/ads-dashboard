@@ -4,6 +4,8 @@ dist
 apps/*/dist
 .git
 .env
+.env.*
+.cursor
 .DS_Store
 playwright-report
 test-results

@@ -7,14 +7,19 @@
     "apps/web"
   ],
   "scripts": {
-    "dev": "npm run dev --workspaces",
+    "dev": "concurrently --names api,web --prefix-colors cyan,green \"npm run dev --workspace @ads-dashboard/api\" \"npm run dev --workspace @ads-dashboard/web\"",
+    "dev:api": "npm run dev --workspace @ads-dashboard/api",
+    "dev:web": "npm run dev --workspace @ads-dashboard/web",
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
     "typecheck": "npm run typecheck --workspaces",
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "concurrently": "^10.0.3",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.9"
   }
 }

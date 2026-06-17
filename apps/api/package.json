@@ -4,25 +4,28 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "node --env-file-if-exists=../../.env.local --import tsx --watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "scrape": "tsx src/scripts/scrape.ts"
+    "scrape": "node --env-file-if-exists=../../.env.local --import tsx src/scripts/scrape.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.1",
     "@prisma/client": "^6.10.1",
     "fastify": "^5.4.0",
     "playwright": "^1.53.1",
+    "prisma": "^6.10.1",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/node": "^25.9.3",
-    "prisma": "^6.10.1",
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.9"
   }
 }

@@ -1,7 +1,6 @@
 import { ScrapeStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import { upsertAds } from "../ads/ads.repository.js";
-import { scrapeNikeAds } from "../../scraper/facebookAdsLibraryScraper.js";
 
 let activeRunId: string | null = null;
 
@@ -32,6 +31,7 @@ export async function getScrapeRun(id: string) {
 
 async function executeScrapeRun(runId: string) {
   try {
+    const { scrapeNikeAds } = await import("../../scraper/facebookAdsLibraryScraper.js");
     const ads = await scrapeNikeAds({ limit: 50 });
     await upsertAds(ads);
 

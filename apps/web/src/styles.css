@@ -57,35 +57,6 @@ h2 {
   margin-bottom: 16px;
 }
 
-.actions {
-  display: flex;
-  gap: 10px;
-}
-
-.primary-button,
-.icon-button {
-  align-items: center;
-  border: 1px solid #151a1f;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
-  gap: 8px;
-  height: 42px;
-  justify-content: center;
-}
-
-.primary-button {
-  background: #151a1f;
-  color: white;
-  padding: 0 16px;
-}
-
-.icon-button {
-  aspect-ratio: 1;
-  background: white;
-  color: #151a1f;
-}
-
 .status-strip,
 .filters,
 .chart-section,
@@ -107,6 +78,17 @@ h2 {
   padding: 14px 16px;
 }
 
+.metric-with-action {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 38px;
+}
+
+.metric-content {
+  min-width: 0;
+}
+
 .metric span {
   color: #63706b;
   display: block;
@@ -115,11 +97,111 @@ h2 {
 }
 
 .metric strong {
-  display: block;
+  align-items: center;
+  display: flex;
+  gap: 8px;
   font-size: 18px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.metric-action {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.metric-action-button {
+  align-items: center;
+  aspect-ratio: 1;
+  background: #151a1f;
+  border: 1px solid #151a1f;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  position: relative;
+}
+
+.metric-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.button-tooltip {
+  background: #151a1f;
+  border-radius: 6px;
+  bottom: calc(100% + 8px);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  left: 50%;
+  line-height: 1;
+  opacity: 0;
+  padding: 7px 8px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+  transition:
+    opacity 120ms ease,
+    visibility 120ms ease;
+  visibility: hidden;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.button-tooltip::after {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #151a1f;
+  content: "";
+  left: 50%;
+  position: absolute;
+  top: 100%;
+  transform: translateX(-50%);
+}
+
+.metric-action-button:hover .button-tooltip,
+.metric-action-button:focus-visible .button-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.metric-active {
+  background: #f0f8ff;
+  border-color: #8fc4e8;
+}
+
+.metric-active span {
+  color: #24577a;
+}
+
+.scrape-status {
+  align-items: center;
+  background: #f0f8ff;
+  border: 1px solid #8fc4e8;
+  border-radius: 8px;
+  color: #24577a;
+  display: flex;
+  font-weight: 700;
+  gap: 10px;
+  margin: 0 auto 20px;
+  max-width: 1280px;
+  padding: 12px 14px;
+}
+
+.spinner {
+  animation: spin 0.85s linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .filters {
@@ -129,7 +211,8 @@ h2 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.filters label {
+.filters label,
+.filter-field {
   color: #4a5652;
   display: grid;
   font-size: 13px;
@@ -137,7 +220,13 @@ h2 {
   gap: 6px;
 }
 
-.filters input,
+.filter-label-title {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.filters input:not([type="checkbox"]),
 .filters select {
   background: white;
   border: 1px solid #cbd5d1;
@@ -145,6 +234,67 @@ h2 {
   height: 40px;
   padding: 0 10px;
   width: 100%;
+}
+
+.platform-select {
+  position: relative;
+}
+
+.platform-select-trigger {
+  align-items: center;
+  background: white;
+  border: 1px solid #cbd5d1;
+  border-radius: 8px;
+  color: #1d2329;
+  cursor: pointer;
+  display: flex;
+  font-weight: 600;
+  gap: 8px;
+  height: 40px;
+  justify-content: space-between;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.platform-select-trigger span {
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.platform-select-menu {
+  background: white;
+  border: 1px solid #cbd5d1;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(21, 26, 31, 0.14);
+  display: grid;
+  gap: 4px;
+  left: 0;
+  padding: 8px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+}
+
+.platform-select-option {
+  align-items: center;
+  color: #1d2329;
+  display: grid;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 8px;
+  grid-template-columns: 15px 18px minmax(0, 1fr);
+  min-height: 28px;
+}
+
+.platform-select-option input {
+  accent-color: #151a1f;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  width: 15px;
 }
 
 .error {
@@ -180,6 +330,17 @@ h2 {
   overflow-x: auto;
 }
 
+.infinite-scroll-status {
+  align-items: center;
+  color: #66736f;
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+  justify-content: center;
+  min-height: 44px;
+  padding-top: 10px;
+}
+
 table {
   border-collapse: collapse;
   min-width: 860px;
@@ -209,6 +370,55 @@ th {
   width: 110px;
 }
 
+.asset-preview-wrap {
+  display: block;
+  position: relative;
+  width: max-content;
+}
+
+.asset-zoom {
+  align-items: center;
+  background: rgba(21, 26, 31, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  bottom: 6px;
+  color: white;
+  display: flex;
+  height: 26px;
+  justify-content: center;
+  position: absolute;
+  right: 6px;
+  width: 26px;
+}
+
+.asset-popover {
+  background: white;
+  border: 1px solid #cbd5d1;
+  border-radius: 8px;
+  box-shadow: 0 14px 38px rgba(21, 26, 31, 0.22);
+  display: none;
+  left: 34px;
+  padding: 8px;
+  position: absolute;
+  top: -6px;
+  z-index: 5;
+}
+
+.asset-zoom:hover .asset-popover,
+.asset-zoom:focus .asset-popover {
+  display: block;
+}
+
+.asset-preview {
+  aspect-ratio: 1.4;
+  background: #eef2ef;
+  border-radius: 6px;
+  display: block;
+  height: 240px;
+  object-fit: contain;
+  width: 336px;
+}
+
 .asset-placeholder {
   align-items: center;
   background: #eef2ef;
@@ -219,6 +429,37 @@ th {
   height: 78px;
   justify-content: center;
   width: 110px;
+}
+
+.platform-list {
+  display: grid;
+  gap: 8px;
+}
+
+.platform-item {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.platform-icon {
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
+}
+
+.platform-icon-fallback {
+  align-items: center;
+  background: #4a5652;
+  border-radius: 5px;
+  color: white;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 800;
+  justify-content: center;
+  line-height: 1;
 }
 
 .badge {
